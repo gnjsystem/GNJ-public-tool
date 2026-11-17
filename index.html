@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>냉난방·전자칠판 1분 산출 | 지앤제이시스템</title>
+<meta name="description" content="평수와 예산만 넣으면 필요 냉방용량, 전자칠판 크기, 계약 방식(수의·2인 견적·임대차)과 품의서 문구가 바로 나옵니다. 회원가입·개인정보 입력 없음.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0B2239">
+<style>
+:root{
+  --navy:#0B2239; --blue:#0070F3; --blue-soft:#EAF2FE;
+  --teal:#0D9488; --teal-soft:#E6F6F3; --line:#E3E9F0; --ink:#22364B;
+  --muted:#6B7F94; --faint:#93A5B8; --bg:#F5F7FA; --white:#fff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Noto Sans KR",system-ui,sans-serif;
+  color:var(--ink); background:var(--bg); font-size:16px; line-height:1.55;
+  word-break:keep-all; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 108px}
+a{color:inherit;text-decoration:none}
+
+/* ---------- header ---------- */
+header{background:var(--navy);color:#fff;padding:18px 0 20px}
+header .wrap{padding-bottom:0}
+.brand{font-weight:800;font-size:15px;letter-spacing:-.01em}
+.mark{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:6px;
+  background:var(--blue);font-size:11px;font-weight:900;vertical-align:-6px;margin-right:8px}
+.brand small{color:#8FB3D8;font-weight:600;font-size:11px;letter-spacing:.14em;margin-left:4px}
+h1{font-size:22px;line-height:1.32;letter-spacing:-.03em;margin:14px 0 6px;font-weight:900}
+header p{margin:0;color:#C3D4E4;font-size:13px;line-height:1.6}
+header .free{display:inline-block;margin-top:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);
+  color:#DFE9F3;font-size:11.5px;padding:4px 10px;border-radius:99px}
+
+/* ---------- cards ---------- */
+.card{background:var(--white);border-radius:14px;box-shadow:0 1px 2px rgba(11,34,57,.05),0 6px 20px rgba(11,34,57,.05);
+  padding:16px;margin-top:12px}
+.step{margin:0 0 10px}
+.step b{display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:7px;
+  background:var(--blue);color:#fff;font-size:12px;font-weight:800;vertical-align:-5px;margin-right:8px}
+.step h2{display:inline;font-size:16px;margin:0;font-weight:800;letter-spacing:-.02em}
+.step span{font-size:12px;color:var(--faint);font-weight:500;margin-left:6px}
+.hint{font-size:12.5px;color:var(--muted);margin:-2px 0 10px;line-height:1.55}
+
+/* ---------- chips ---------- */
+.chips{margin:0 -3px}
+.chip{display:inline-block;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:11px;
+  padding:10px 13px;font-size:14px;font-weight:600;cursor:pointer;line-height:1.2;
+  margin:0 3px 7px;font-family:inherit;text-align:center}
+.chip[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft);color:#0B4EA8}
+.chip.t[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft);color:#0A6B62}
+
+/* ---------- stepper ---------- */
+.stepper{white-space:nowrap;margin:4px 0 8px;font-size:0}
+.stepper button,.stepper input,.stepper .unit{display:inline-block;vertical-align:middle;font-size:16px}
+.stepper button{width:46px;height:46px;border-radius:12px;border:1.5px solid var(--line);background:#fff;
+  font-size:20px;font-weight:700;color:var(--navy);cursor:pointer;line-height:1;padding:0;font-family:inherit}
+.stepper input{width:calc(100% - 210px);min-width:70px;text-align:center;border:1.5px solid var(--line);
+  border-radius:12px;height:46px;font-size:19px;font-weight:800;color:var(--navy);font-family:inherit;
+  background:#fff;margin:0 8px;padding:0 4px}
+.stepper .unit{font-size:14px;font-weight:700;color:var(--muted);width:52px;text-align:left}
+.stepper input:focus{outline:none;border-color:var(--blue)}
+.conv{font-size:12.5px;color:var(--faint);margin-top:2px}
+.toggles{margin-top:10px}
+.tg{display:inline-block;font-size:13px;color:var(--ink);cursor:pointer;margin:0 14px 6px 0}
+.tg input{width:18px;height:18px;vertical-align:-3px;margin-right:6px;accent-color:var(--blue)}
+
+/* ---------- result ---------- */
+.res{background:var(--navy);color:#fff;border-radius:14px;padding:18px 16px;margin-top:12px}
+.res .lbl{font-size:11px;font-weight:700;letter-spacing:.16em;color:#8FB3D8}
+.res .big{font-size:26px;font-weight:900;letter-spacing:-.03em;margin-top:6px;line-height:1.2}
+.res .big em{font-style:normal;color:#5CC8BA}
+.res .sub{font-size:13px;color:#C3D4E4;margin-top:8px;line-height:1.6}
+.res table{width:100%;border-collapse:collapse;margin-top:12px}
+.res td{padding:9px 0;border-top:1px solid rgba(255,255,255,.12);font-size:13.5px;color:#DFE9F3;vertical-align:top}
+.res td.k{width:34%;color:#8FB3D8;font-weight:600;font-size:12.5px}
+.res .disclaim{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.25);
+  font-size:11.5px;line-height:1.6;color:#9FBBD6}
+.res .disclaim b{color:#CBE0F2}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11.5px;font-weight:800;letter-spacing:.02em}
+.badge.b{background:var(--blue-soft);color:#0B4EA8}
+.badge.t{background:var(--teal-soft);color:#0A6B62}
+.badge.n{background:#EDF1F6;color:#3C536B}
+.badge.r{background:#FDECEC;color:#A3312C}
+
+/* ---------- key/value rows ---------- */
+.row{border-top:1px solid var(--line);padding:9px 0;font-size:14px;overflow:hidden}
+.row:first-child{border-top:none;padding-top:0}
+.row .k{float:left;width:34%;color:var(--muted);font-size:13px}
+.row .v{float:right;width:64%;font-weight:700;color:var(--navy);text-align:right}
+
+/* ---------- quote ---------- */
+.qbox{background:#FBFCFE;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:8px}
+.qbox p{margin:0;font-size:13.5px;line-height:1.72;color:#33475B}
+.qbox b{color:var(--navy)}
+.copy{display:block;width:100%;margin-top:10px;height:48px;border:none;border-radius:12px;background:var(--blue);
+  color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
+.copy.done{background:var(--teal)}
+.warnbox{background:#FFFDF7;border:1px solid #EFE3C6;border-left:4px solid #B98B2A;border-radius:10px;
+  padding:12px 13px;font-size:12.5px;line-height:1.6;color:#5A4A28;margin-top:12px}
+.warnbox b{color:#6B4E12}
+.vatnote{background:var(--blue-soft);border:1px solid #CFE0FA;border-left:4px solid var(--blue);border-radius:10px;
+  padding:12px 13px;font-size:12.5px;line-height:1.62;color:#12406F;margin-top:12px}
+.vatnote b{color:#0B4EA8}
+.note{font-size:12px;color:var(--faint);line-height:1.6;margin-top:10px}
+
+/* ---------- contact ---------- */
+.contact{margin:12px -5px 0;font-size:0}
+.btn{display:inline-block;width:calc(50% - 10px);margin:0 5px 10px;height:52px;line-height:52px;
+  border-radius:13px;font-size:15px;font-weight:800;text-align:center;border:none;font-family:inherit;
+  cursor:pointer;vertical-align:top;padding:0 6px;white-space:nowrap;overflow:hidden}
+.btn.primary{width:calc(100% - 10px);background:var(--blue);color:#fff}
+.btn.line{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn.kakao{background:#FEE500;color:#3C1E1E}
+.btn svg{width:16px;height:16px;vertical-align:-3px;margin-right:7px;fill:none;stroke:currentColor;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn svg[fill="currentColor"]{fill:currentColor;stroke:none}
+
+/* ---------- sticky bar ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+  padding:10px 16px;z-index:20}
+.bar .in{max-width:720px;margin:0 auto;overflow:hidden}
+.bar .t{float:left;width:calc(100% - 120px);font-size:12px;color:var(--muted);line-height:1.35;padding-top:4px}
+.bar .t b{display:block;color:var(--navy);font-size:14px;letter-spacing:-.02em}
+.bar a{float:right;display:block;height:44px;line-height:44px;padding:0 22px;border-radius:12px;
+  background:var(--navy);color:#fff;font-size:14.5px;font-weight:800}
+
+/* ---------- misc ---------- */
+footer{color:var(--faint);font-size:11.5px;line-height:1.7;padding:22px 0 0;text-align:center}
+footer b{color:#6B7F94}
+.toast{position:fixed;left:50%;bottom:92px;margin-left:-140px;width:280px;background:var(--navy);color:#fff;
+  padding:12px 14px;border-radius:12px;font-size:13px;font-weight:700;opacity:0;visibility:hidden;
+  transition:.2s;z-index:40;text-align:center;line-height:1.45}
+.toast.on{opacity:1;visibility:visible}
+
+@media (min-width:680px){
+  h1{font-size:26px}
+  .contact .btn{width:calc(33.333% - 10px)}
+  .btn.primary{width:calc(33.333% - 10px)}
+}
+@media print{
+  header,.bar,.contact,.copy,.toast{display:none!important}
+  body{background:#fff}
+  .card,.res{box-shadow:none;border:1px solid #DCE3EB}
+  .wrap{padding:0}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><span class="mark">GJ</span>지앤제이시스템 <small>G&amp;J SYSTEM</small></div>
+    <h1>평수만 넣으면,<br>용량 · 계약 방식 · 기안 문구까지</h1>
+    <p>공공기관 · 학교 · 복지시설 담당자용 1분 산출 도구입니다.<br>예산이 정해져 있으면 계약 방식부터 확인하세요.</p>
+    <span class="free">회원가입 없음 · 개인정보 입력 없음 · 무료</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1. space -->
+  <div class="card">
+    <div class="step"><b>1</b><h2>공간</h2><span>용도와 평수</span></div>
+    <div class="chips" id="useChips">
+      <span class="chip" role="button" tabindex="0" data-use="class" data-w="100" data-name="교실" aria-pressed="true">교실</span>
+      <span class="chip" role="button" tabindex="0" data-use="admin" data-w="95" data-name="행정실·교무실" aria-pressed="false">행정실·교무실</span>
+      <span class="chip" role="button" tabindex="0" data-use="meet" data-w="105" data-name="회의실·연수실" aria-pressed="false">회의실·연수실</span>
+      <span class="chip" role="button" tabindex="0" data-use="welfare" data-w="95" data-name="복지관·경로당" aria-pressed="false">복지관·경로당</span>
+      <span class="chip" role="button" tabindex="0" data-use="hall" data-w="85" data-name="강당·체육관" aria-pressed="false">강당·체육관</span>
+      <span class="chip" role="button" tabindex="0" data-use="office" data-w="100" data-name="일반 사무실" aria-pressed="false">일반 사무실</span>
+    </div>
+
+    <div class="stepper" style="margin-top:16px">
+      <button type="button" id="minus" aria-label="1평 줄이기">−</button>
+      <input id="pyeong" type="number" inputmode="numeric" min="3" max="300" step="1" value="20" aria-label="실면적 평수">
+      <span class="unit">평</span>
+      <button type="button" id="plus" aria-label="1평 늘리기">＋</button>
+    </div>
+    <div class="conv" id="conv">약 66.1㎡ · 20평 × 3.3058</div>
+
+    <div class="toggles">
+      <label class="tg"><input type="checkbox" id="south"> 서향 · 통창 (+15%)</label>
+      <label class="tg"><input type="checkbox" id="high"> 천장 3m 이상 (+10%)</label>
+      <label class="tg"><input type="checkbox" id="elec"> 전기 여유 없음</label>
+    </div>
+  </div>
+
+  <!-- 2. items -->
+  <div class="card">
+    <div class="step"><b>2</b><h2>품목</h2><span>복수 선택</span></div>
+    <div class="chips" id="itemChips">
+      <span class="chip t" role="button" tabindex="0" data-item="hvac" aria-pressed="true">냉난방기</span>
+      <span class="chip t" role="button" tabindex="0" data-item="board" aria-pressed="true">전자칠판</span>
+      <span class="chip t" role="button" tabindex="0" data-item="appl" aria-pressed="false">가전</span>
+    </div>
+    <div class="hint" style="margin-top:12px;margin-bottom:0">에어컨(벽걸이·스탠드)과 히트펌프(GHP·EHP)는 같은 방식으로 계산합니다.</div>
+  </div>
+
+  <!-- 3. budget / method -->
+  <div class="card">
+    <div class="step"><b>3</b><h2>예산 · 방식</h2><span>계약 방식 판별</span></div>
+    <div class="chips" id="modeChips">
+      <span class="chip" role="button" tabindex="0" data-mode="buy" aria-pressed="true">구매(일시불)</span>
+      <span class="chip" role="button" tabindex="0" data-mode="rent" aria-pressed="false">렌탈(임대차)</span>
+    </div>
+
+    <div id="buyBox" style="margin-top:16px">
+      <label style="font-size:13px;font-weight:700;color:var(--muted);display:block;margin-bottom:8px">
+        예산 규모 (추정가격, 부가세 제외)
+      </label>
+      <div class="stepper">
+        <button type="button" id="bMinus" aria-label="100만원 줄이기">−</button>
+        <input id="budget" type="number" inputmode="numeric" min="0" max="200000" step="100" value="2000" aria-label="예산 백만원 단위">
+        <span class="unit">만원</span>
+        <button type="button" id="bPlus" aria-label="100만원 늘리기">＋</button>
+      </div>
+      <div class="conv">모르면 비워 두세요 · 아래 참고 예산 범위로 계산합니다</div>
+    </div>
+
+    <div id="rentBox" style="margin-top:16px;display:none">
+      <label style="font-size:13px;font-weight:700;color:var(--muted);display:block;margin-bottom:8px">렌탈 기간</label>
+      <div class="chips" id="termChips">
+        <span class="chip" role="button" tabindex="0" data-term="36" aria-pressed="false">36개월</span>
+        <span class="chip" role="button" tabindex="0" data-term="48" aria-pressed="false">48개월</span>
+        <span class="chip" role="button" tabindex="0" data-term="60" aria-pressed="true">60개월</span>
+      </div>
+      <label style="font-size:13px;font-weight:700;color:var(--muted);display:block;margin:16px 0 8px">
+        월 렌탈료 (알고 있으면 입력)
+      </label>
+      <div class="stepper">
+        <button type="button" id="rMinus" aria-label="10만원 줄이기">−</button>
+        <input id="rent" type="number" inputmode="numeric" min="0" max="5000" step="10" value="0" aria-label="월 렌탈료 만원">
+        <span class="unit">만원/월</span>
+        <button type="button" id="rPlus" aria-label="10만원 늘리기">＋</button>
+      </div>
+      <div class="conv" id="rentConv">총액 = 월 렌탈료 × 기간</div>
+    </div>
+  </div>
+
+  <!-- result summary -->
+  <div class="res" id="res">
+    <div class="lbl">권장 사양</div>
+    <div class="big" id="resBig">—</div>
+    <div class="sub" id="resSub"></div>
+    <table>
+      <tr><td class="k">전자칠판</td><td id="resBoard">—</td></tr>
+      <tr><td class="k">예상 예산 범위</td><td id="resMoney">—</td></tr>
+      <tr><td class="k">계약 방식</td><td id="resMethod">—</td></tr>
+    </table>
+    <div class="disclaim">현장 설치·배관·부가세 조건에 따라 달라지는 <b>참고 예산 범위</b>이며, 정확한 납품가는 <b>공식 견적</b>으로 안내드립니다.</div>
+  </div>
+
+  <!-- method detail -->
+  <div class="card" id="methodCard">
+    <div class="step"><b>4</b><h2>계약 방식 판별</h2><span>지방계약법 시행령 §25 · §30</span></div>
+    <div class="rows" id="methodRows"></div>
+    <div class="warnbox" id="methodWarn" style="display:none"></div>
+    <div class="vatnote">
+      <b>한도(2천만 원·1억 원·5천만 원)는 추정가격(부가세 제외) 기준이지만, 실제 기안은 배정예산(부가세 포함)으로 잡으세요</b> —
+      추정가격 2,000만 원이면 부가세 포함 총액 약 2,200만 원입니다.
+    </div>
+    <div class="note">
+      추정가격은 통상 부가세·관급자재를 제외한 금액으로 산정하고(시행령 §7), 계약금액에는 부가세가 포함됩니다(시행규칙 §11①).
+      견적서에는 “부가세 포함 총액”을 함께 적어 두세요.
+    </div>
+  </div>
+
+  <!-- buy vs rent -->
+  <div class="card" id="compareCard">
+    <div class="step"><b>5</b><h2>구매 vs 렌탈</h2><span>어느 쪽이 유리한가</span></div>
+    <div class="rows" id="compareRows"></div>
+    <div class="note" id="compareNote"></div>
+  </div>
+
+  <!-- quote -->
+  <div class="card" id="quoteCard">
+    <div class="step"><b>6</b><h2>기안 문구</h2><span>그대로 복사해서 붙이세요</span></div>
+    <div class="qbox"><p id="quoteText">—</p></div>
+    <button class="copy" id="copyBtn">문구 복사</button>
+    <div class="note">금액 자리에 ○○원이 남아 있으면, 품의서 금액으로 바꿔 쓰시면 됩니다.</div>
+  </div>
+
+  <!-- contact -->
+  <div class="contact">
+    <a class="btn primary" id="telBtn" href="tel:01064296269">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+      대표 직통 전화
+    </a>
+    <a class="btn line" id="mailBtn" href="mailto:gnjsystem@naver.com">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+      이메일
+    </a>
+    <button class="btn kakao" id="kakaoBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.9 3 2.8 6.3 2.8 10.4c0 2.6 1.7 4.9 4.2 6.2-.2.7-.7 2.4-.8 2.8 0 0 0 .3.3.1.3-.1 3.1-2 3.6-2.3.6.1 1.2.1 1.9.1 5.1 0 9.2-3.3 9.2-7.4S17.1 3 12 3z"/></svg>
+      카카오톡
+    </button>
+  </div>
+
+  <footer>
+    <b>지앤제이시스템</b> · 대표 송찬홍 · 사업자등록번호 715-39-00422<br>
+    전북특별자치도 전주시 완산구 따박골6길 41-19, 1층 102호<br>
+    T. 0507-1349-6296 · H. 010-6429-6269 · gnjsystem@naver.com<br>
+    <span style="display:inline-block;margin-top:10px">
+      이 페이지는 참고용 개략 산출입니다. 최종 용량·금액은 현장 확인 후 견적서로 확정되며,
+      계약 방식·발주 방법은 발주기관의 판단에 따릅니다. 법령 기준 2026. 11. 현행.
+    </span>
+  </footer>
+</div>
+
+<div class="bar">
+  <div class="in">
+    <div class="t"><b id="barTitle">20평 교실</b><span id="barSub">7.2kW · 1인 견적</span></div>
+    <a href="tel:01064296269">전화</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ────────────────────────────────────────────────
+   설정 — 대표님이 바꾸실 수 있는 값
+   kakaoUrl: 카카오톡 채널/오픈채팅 주소. 비워 두면
+             "번호 복사" 안내로 대체됩니다.
+   ──────────────────────────────────────────────── */
+var CONFIG = {
+  phone: '010-6429-6269',
+  office: '0507-1349-6296',
+  email: 'gnjsystem@naver.com',
+  site: 'https://gnjsystem.it.kr',
+  kakaoUrl: 'http://pf.kakao.com/_Fgpuxj/chat'
+};
+
+/* 참고 예산 범위 (만원, 최소~최대) — 현장 설치·배관·전기·운반 여유를 넣은 공개용 구간입니다.
+   정확한 납품가는 공식 견적으로 확정하며, 23kW 이상은 자료가 없어 별도 견적(null)입니다. */
+var GUIDE_HVAC = {
+  5.2: [310, 380], 7.2: [360, 440], 8.3: [370, 460],
+  11.0: [490, 600], 13.0: [530, 650], 14.5: [560, 690],
+  23.0: null, 29.0: null
+};
+var GUIDE_BOARD = { 55: [190, 240], 65: [230, 290], 75: [340, 420], 86: [420, 520], 98: [1050, 1250] };
+
+var state = {
+  use: 'class', useName: '교실', w: 100,
+  pyeong: 20, south: false, high: false, elec: false,
+  items: { hvac: true, board: true, appl: false },
+  mode: 'buy', budget: 2000, term: 60, rent: 0
+};
+
+var $ = function (id) { return document.getElementById(id); };
+function won(n) { return n.toLocaleString('ko-KR'); }
+function wonRange(a, b) { return won(a) + '~' + won(b) + '만원'; }
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+/* ── 계산 ─────────────────────────────────────── */
+function calc() {
+  var p = state.pyeong;
+  var area = p * 3.3058;
+  var load = area * state.w / 1000;     /* W/㎡ → kW */
+  if (state.south) load *= 1.15;
+  if (state.high) load *= 1.10;
+  load = Math.max(1.4, load);
+
+  var ladder = [5.2, 7.2, 8.3, 11.0, 13.0, 14.5, 23.0, 29.0];
+  var cap = ladder[ladder.length - 1], units = 1;
+  for (var i = 0; i < ladder.length; i++) {
+    if (ladder[i] >= load - 0.001) { cap = ladder[i]; break; }
+  }
+  if (load > 29) { units = Math.ceil(load / 29); cap = 29; }
+
+  /* 전자칠판 — 시청거리(화면 대각선 1.5~6배) 기준 */
+  var inch = 55;
+  if (p > 40) inch = 98;
+  else if (p > 26) inch = 86;
+  else if (p > 15) inch = 75;
+  else if (p > 10) inch = 65;
+
+  /* 예산 범위 (만원) — 최소~최대 */
+  var hvacG = GUIDE_HVAC[cap] || null;
+  var hvacQuote = state.items.hvac && !hvacG;          /* 23kW 이상 — 별도 견적 */
+  var hvacMin = hvacG ? hvacG[0] * units : 0;
+  var hvacMax = hvacG ? hvacG[1] * units : 0;
+  var boardG = state.items.board ? (GUIDE_BOARD[inch] || null) : null;
+  var boardMin = boardG ? boardG[0] : 0;
+  var boardMax = boardG ? boardG[1] : 0;
+  var totalMin = (state.items.hvac ? hvacMin : 0) + boardMin;
+  var totalMax = (state.items.hvac ? hvacMax : 0) + boardMax;
+
+  /* 계약 방식 */
+  var method, methodName, cls, basis, warn = '', cnt, quote;
+  var est = state.mode === 'buy' ? state.budget : 0;
+
+  if (state.mode === 'rent') {
+    var totalRent = state.rent * 1 * state.term; /* 만원 */
+    var limit = 5000;                            /* 5천만원 */
+    if (state.rent > 0 && totalRent > limit) {
+      methodName = '임대차 수의 한도 초과'; cls = 'r'; cnt = '—';
+      basis = '총액 ' + won(totalRent) + '만원 · 한도 5,000만원';
+      warn = '총액이 5천만 원을 넘으면 시행령 §25①5사목 임대차 수의계약 대상이 아닙니다. 기간을 줄이거나(60→36개월) 기관 계약부서와 방법을 상의하세요.';
+      quote = '본 건은 추정가격 ' + won(totalRent) + '만원(총액 기준)의 물품 임대차 계약으로서 같은 영 제25조제1항제5호사목에 따른 수의계약 대상 여부를 검토 중이며, 총액이 기준을 초과하여 계약 방법을 재검토하고자 합니다.';
+    } else {
+      methodName = '임대차 수의계약'; cls = 'n'; cnt = '2인 이상 원칙';
+      basis = '§25①5사목 · 총액 ' + (state.rent > 0 ? won(totalRent) + '만원' : '미입력') + ' / 한도 5,000만원';
+      quote = '본 건은 추정가격 ○○원(총액 기준)의 물품 임대차 계약으로서 「지방자치단체를 당사자로 하는 계약에 관한 법률 시행령」 제25조제1항제5호사목에 따라 수의계약으로 체결하고자 합니다.';
+    }
+    method = 'rent';
+  } else {
+    var amtTxt = est > 0 ? won(est) + '만원' : '○○원';
+    if (est <= 2000) {
+      methodName = '1인 견적 수의계약'; cls = 'b'; cnt = '1인';
+      basis = '추정가격 ' + (est > 0 ? won(est) + '만원' : '미입력') + ' ≤ 2천만원';
+      quote = '본 건은 추정가격 ' + amtTxt + '(부가세 제외)인 물품 구매로서 「지방자치단체를 당사자로 하는 계약에 관한 법률 시행령」 제25조제1항제5호나목 및 제30조제1항제2호에 따라 1인 견적에 의한 수의계약으로 체결하고자 합니다.';
+    } else if (est <= 10000) {
+      methodName = '소상공인 2인 견적'; cls = 't'; cnt = '2인 이상';
+      basis = '추정가격 ' + won(est) + '만원 ≤ 1억원';
+      quote = '본 건은 추정가격 ' + amtTxt + '(부가세 제외)으로서 같은 영 제25조제1항제5호라목에 따른 소기업·소상공인과의 수의계약 대상이며, 같은 영 제30조제1항에 따라 2인 이상의 견적서를 제출받아 계약상대자를 선정하고자 합니다.';
+    } else {
+      methodName = '2인 견적 초과 · 경쟁입찰'; cls = 'r'; cnt = '입찰';
+      basis = '추정가격 ' + won(est) + '만원 > 1억원';
+      warn = '1억 원을 넘으면 소상공인 수의계약 대상이 아닙니다. 나라장터(G2B) 경쟁입찰 또는 분리 발주(교실 단위)를 검토하세요.';
+      quote = '본 건은 추정가격 ' + amtTxt + '(부가세 제외)인 물품 구매로서, 「지방자치단체를 당사자로 하는 계약에 관한 법률」 제7조 및 같은 법 시행령 제25조에 따른 경쟁입찰 방법으로 추진하고자 합니다.';
+    }
+    method = 'buy';
+  }
+
+  return {
+    area: area, load: load, cap: cap, units: units, inch: inch,
+    hvacMin: hvacMin, hvacMax: hvacMax, hvacQuote: hvacQuote,
+    boardMin: boardMin, boardMax: boardMax,
+    totalMin: totalMin, totalMax: totalMax,
+    method: method, methodName: methodName, cls: cls, cnt: cnt, basis: basis,
+    warn: warn, quote: quote, est: est,
+    totalRent: state.rent * state.term
+  };
+}
+
+/* ── 렌더 ─────────────────────────────────────── */
+function render() {
+  var r = calc();
+
+  $('conv').textContent = '약 ' + r.area.toFixed(1) + '㎡ · ' + state.pyeong + '평 × 3.3058';
+
+  /* 결과 요약 */
+  var big = '';
+  if (state.items.hvac) {
+    big = r.cap.toFixed(1).replace('.0', '') + 'kW <em>× ' + r.units + '대</em>';
+  } else if (state.items.board) {
+    big = r.inch + '인치 <em>전자칠판</em>';
+  } else {
+    big = '가전 <em>별도 견적</em>';
+  }
+  $('resBig').innerHTML = big;
+
+  var subs = [];
+  subs.push(state.useName + ' · ' + state.pyeong + '평(약 ' + r.area.toFixed(0) + '㎡)');
+  subs.push('필요 냉방능력 약 ' + r.load.toFixed(1) + 'kW (' + state.w + 'W/㎡ 기준)' + (r.units > 1 ? ' (1대 29kW 초과분 분할)' : ''));
+  if (state.south || state.high) subs.push('할증 적용' + (state.south ? ' · 서향·통창 15%' : '') + (state.high ? ' · 천장 10%' : ''));
+  $('resSub').innerHTML = subs.join('<br>');
+
+  $('resBoard').innerHTML = state.items.board
+    ? r.inch + '인치 <span style="color:#8FB3D8">· 4K UHD · 50포인트</span>'
+    : '선택 안 함';
+
+  var money = [];
+  if (state.items.hvac) {
+    money.push(r.hvacQuote
+      ? '냉난방기 23kW 이상 — 별도 견적'
+      : '냉난방기 ' + wonRange(r.hvacMin, r.hvacMax) + (r.units > 1 ? ' (' + r.units + '대)' : ''));
+  }
+  if (state.items.board) money.push('전자칠판 ' + wonRange(r.boardMin, r.boardMax));
+  var moneyHtml = money.join('<br>');
+  if (r.totalMax > 0) {
+    moneyHtml += '<br><span style="color:#5CC8BA;font-weight:800">합계 ' + wonRange(r.totalMin, r.totalMax) + '</span>'
+      + (r.hvacQuote ? ' <span style="color:#8FB3D8;font-size:12px">+ 냉난방기 별도</span>' : '');
+  }
+  moneyHtml += '<br><span style="color:#8FB3D8;font-size:12px">설치·배관·전기·운반 여유 포함 참고 범위</span>';
+  $('resMoney').innerHTML = money.length ? moneyHtml : '가전은 모델·수량에 따라 별도';
+
+  $('resMethod').innerHTML = '<span class="badge ' + r.cls + '" style="background:rgba(255,255,255,.14);color:#fff">'
+    + r.methodName + '</span>';
+
+  /* 계약 방식 상세 */
+  var rows = [
+    ['판단 기준', r.basis],
+    ['계약 방식', (r.method === 'buy' ? '물품 구매' : '물품 임대차') + ' · ' + r.methodName],
+    ['견적 인원', r.cnt],
+    ['근거 조문', r.method === 'buy' ? '§25①5나목 / §25①5라목 · §30①' : '§25①5사목 · §30①']
+  ];
+  if (r.method === 'buy' && r.est > 0) {
+    rows.splice(2, 0, ['배정예산(부가세 포함)', '약 ' + won(Math.round(r.est * 1.1)) + '만원']);
+  }
+  $('methodRows').innerHTML = rows.map(function (x) {
+    return '<div class="row"><span class="k">' + x[0] + '</span><span class="v">' + x[1] + '</span></div>';
+  }).join('');
+
+  var w = $('methodWarn');
+  if (r.warn) { w.style.display = 'block'; w.innerHTML = '<b>확인 필요</b> — ' + r.warn; }
+  else { w.style.display = 'none'; }
+
+  /* 구매 vs 렌탈 */
+  var cRows = [];
+  cRows.push(['초기 부담', '구매 ' + (r.totalMax > 0 ? wonRange(r.totalMin, r.totalMax) : '—') + ' / 렌탈 월 요금']);
+  cRows.push(['예산 집행', '구매 = 당해 예산 / 렌탈 = 월 단위']);
+  cRows.push(['소유권', '구매 즉시 / 렌탈은 기간 종료 후 이전']);
+  cRows.push(['계약 한도', '구매 2천만·1억 / 렌탈 총액 5천만']);
+  cRows.push(['중도 해지', '구매 — / 렌탈 위약금 30·20·10% + 회수비']);
+  cRows.push(['케어', '구매 = 제조사 무상 A/S / 렌탈 = 제조사·렌탈사 약정 기준 A/S']);
+  $('compareRows').innerHTML = cRows.map(function (x) {
+    return '<div class="row"><span class="k">' + x[0] + '</span><span class="v">' + x[1] + '</span></div>';
+  }).join('');
+
+  var monthly = state.term === 36 ? 139 : state.term === 48 ? 104 : 83;
+  $('compareNote').innerHTML = '<b>렌탈 한도 계산</b> — 5,000만원 ÷ ' + state.term + '개월 = 월 약 ' + monthly
+    + '만원 이하. 이 금액을 넘으면 수의계약 대상이 아닐 수 있습니다. '
+    + (r.totalMax > 0 && r.totalMax <= 5000 ? '지금 구성(약 ' + wonRange(r.totalMin, r.totalMax) + ')을 ' + state.term + '개월로 나누면 월 약 '
+      + (Math.round(r.totalMax / state.term * 1.25)) + '만원 이하 수준입니다(렌탈 요율 가정).' : '');
+
+  /* 품의서 */
+  $('quoteText').innerHTML = r.quote;
+
+  /* 하단 바 */
+  $('barTitle').textContent = state.pyeong + '평 ' + state.useName;
+  $('barSub').textContent = (state.items.hvac ? r.cap.toFixed(1).replace('.0', '') + 'kW' : r.inch + '인치') + ' · ' + r.methodName;
+
+  /* 렌탈 총액 표시 */
+  if (state.mode === 'rent') {
+    $('rentConv').textContent = state.rent > 0
+      ? '총액 ' + won(state.rent * state.term) + '만원 (' + state.rent + '만원 × ' + state.term + '개월)'
+      : '총액 = 월 렌탈료 × 기간';
+  }
+
+  window.__r = r;
+}
+
+/* ── 이벤트 ───────────────────────────────────── */
+function pressGroup(container, attr, cb) {
+  var btns = container.querySelectorAll('.chip');
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      btns.forEach(function (x) { x.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      cb(b);
+      render();
+    });
+  });
+}
+
+document.addEventListener('keydown', function (e) {
+  var t = e.target;
+  if (t && t.classList && t.classList.contains('chip') && (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar')) {
+    e.preventDefault(); t.click();
+  }
+});
+
+pressGroup($('useChips'), 'data-use', function (b) {
+  state.use = b.dataset.use; state.useName = b.dataset.name; state.w = parseFloat(b.dataset.w);
+});
+
+$('itemChips').querySelectorAll('.chip').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var k = b.dataset.item;
+    state.items[k] = !state.items[k];
+    b.setAttribute('aria-pressed', state.items[k] ? 'true' : 'false');
+    render();
+  });
+});
+
+pressGroup($('modeChips'), 'data-mode', function (b) {
+  state.mode = b.dataset.mode;
+  $('buyBox').style.display = state.mode === 'buy' ? 'block' : 'none';
+  $('rentBox').style.display = state.mode === 'rent' ? 'block' : 'none';
+});
+
+pressGroup($('termChips'), 'data-term', function (b) { state.term = parseInt(b.dataset.term, 10); });
+
+function bindStepper(minus, plus, input, key, step, lo, hi) {
+  function set(v) {
+    v = clamp(v, lo, hi);
+    state[key] = v;
+    input.value = v;
+    render();
+  }
+  $(minus).addEventListener('click', function () { set((parseFloat(input.value) || 0) - step); });
+  $(plus).addEventListener('click', function () { set((parseFloat(input.value) || 0) + step); });
+  input.addEventListener('input', function () {
+    var v = parseFloat(input.value);
+    if (isNaN(v)) return;
+    state[key] = clamp(v, lo, hi);
+    render();
+  });
+  input.addEventListener('blur', function () { set(parseFloat(input.value) || lo); });
+}
+
+bindStepper('minus', 'plus', $('pyeong'), 'pyeong', 1, 3, 300);
+bindStepper('bMinus', 'bPlus', $('budget'), 'budget', 100, 0, 30000);
+bindStepper('rMinus', 'rPlus', $('rent'), 'rent', 10, 0, 3000);
+
+$('south').addEventListener('change', function (e) { state.south = e.target.checked; render(); });
+$('high').addEventListener('change', function (e) { state.high = e.target.checked; render(); });
+$('elec').addEventListener('change', function (e) { state.elec = e.target.checked; render(); });
+
+/* ── 복사 ─────────────────────────────────────── */
+function toast(msg) {
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(t._h);
+  t._h = setTimeout(function () { t.classList.remove('on'); }, 2200);
+}
+
+function copyText(txt, after) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(ok, fallback);
+  } else { fallback(); }
+  function ok() { done(); }
+  function done() { if (after) { after(); } else { quoteCopied(); } }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { toast('복사가 안 되면 문구를 길게 눌러 선택하세요'); }
+    document.body.removeChild(ta);
+  }
+}
+
+function quoteCopied() {
+  var b = $('copyBtn');
+  b.classList.add('done');
+  b.textContent = '복사되었습니다';
+  toast('기안 문구를 복사했습니다');
+  setTimeout(function () { b.classList.remove('done'); b.textContent = '문구 복사'; }, 2000);
+}
+
+$('copyBtn').addEventListener('click', function () {
+  copyText($('quoteText').innerText.replace(/\s+/g, ' ').trim());
+});
+
+/* ── 카카오톡 ─────────────────────────────────── */
+$('kakaoBtn').addEventListener('click', function () {
+  if (CONFIG.kakaoUrl) { window.open(CONFIG.kakaoUrl, '_blank', 'noopener'); return; }
+  copyText(CONFIG.phone, function () {
+    toast('번호 복사 완료 · 카카오톡에서 ' + CONFIG.phone + ' 검색');
+  });
+});
+
+render();
+</script>
+</body>
+</html>
